@@ -3,7 +3,7 @@ import { Subscription, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { Ingredient } from '../shared/ingredient.model';
-import { StartEditAction } from './store/shopping-list.actions';
+import * as ShoppingListActions from './store/shopping-list.actions';
 import * as fromApp from '../store/app.reducer';
 
 @Component({
@@ -12,18 +12,16 @@ import * as fromApp from '../store/app.reducer';
   styleUrls: ['./shopping-list.component.css'],
 })
 export class ShoppingListComponent implements OnInit, OnDestroy {
-  // ingredients: Ingredient[] = [];
   ingredients: Observable<{ ingredients: Ingredient[] }>;
-  // ingredientsChangedSub: Subscription;
 
-  constructor(private store: Store<fromApp.State>) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
     this.ingredients = this.store.select('shoppingList');
   }
 
   onEditItem(index: number) {
-    this.store.dispatch(new StartEditAction(index));
+    this.store.dispatch(ShoppingListActions.startEdit({ index }));
   }
 
   ngOnDestroy(): void {}

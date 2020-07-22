@@ -5,9 +5,9 @@
 export const environment = {
   production: false,
   firebaseLoginURL:
-    'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=',
+    'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDM3K1z-bo8kS7oytd7l1g5AMYI4o7zWvg',
   firebaseSignUpURL:
-    'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=',
+    'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDM3K1z-bo8kS7oytd7l1g5AMYI4o7zWvg',
   firebaseAPIKey: 'AIzaSyDM3K1z-bo8kS7oytd7l1g5AMYI4o7zWvg',
   firebaseDatabaseURL: 'https://udemy-angular-recipe-e49d9.firebaseio.com',
 };

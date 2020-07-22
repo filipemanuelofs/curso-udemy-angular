@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 
 import { AuthService } from './auth/auth.service';
 import * as fromApp from './store/app.reducer';
-import { AutoLoginAction } from './auth/store/auth.actions';
+import * as AuthActions from './auth/store/auth.actions';
 
 @Component({
   selector: 'app-root',
@@ -13,11 +13,11 @@ import { AutoLoginAction } from './auth/store/auth.actions';
 export class AppComponent implements OnInit {
   constructor(
     private authService: AuthService,
-    private store: Store<fromApp.State>
+    private store: Store<fromApp.AppState>
   ) {}
 
   ngOnInit(): void {
     // this.authService.autoLogIn();
-    this.store.dispatch(new AutoLoginAction());
+    this.store.dispatch(AuthActions.autoLogin());
   }
 }

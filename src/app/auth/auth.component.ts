@@ -5,12 +5,8 @@ import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
 import { AuthService } from './auth.service';
-import {
-  LoginStartAction,
-  SignupStartAction,
-  ClearErrorAction,
-} from './store/auth.actions';
 import * as fromApp from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -27,7 +23,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private store: Store<fromApp.State>
+    private store: Store<fromApp.AppState>
   ) {}
 
   ngOnInit(): void {
@@ -47,41 +43,14 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.authForm.valid) {
-      // this.isLoading = true;
-
       const email = this.authForm.value.email;
       const password = this.authForm.value.password;
 
-      // let authObs: Observable<AuthResponse>;
       if (this.isLoginMode) {
-        // authObs = this.authService.logIn(email, password);
-        this.store.dispatch(
-          new LoginStartAction({
-            email,
-            password,
-          })
-        );
+        this.store.dispatch(AuthActions.loginStart({ email, password }));
       } else {
-        // authObs = this.authService.signUp(email, password);
-        this.store.dispatch(
-          new SignupStartAction({
-            email,
-            password,
-          })
-        );
+        this.store.dispatch(AuthActions.signupStart({ email, password }));
       }
-
-      // authObs.subscribe(
-      //   (response) => {
-      //     this.isLoading = false;
-      //     this.router.navigate(['/recipes']);
-      //   },
-      //   (error) => {
-      //     console.error(error);
-      //     this.error = error;
-      //     this.isLoading = false;
-      //   }
-      // );
 
       this.authForm.reset();
     } else {
@@ -90,8 +59,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onCloseAlert() {
-    // this.error = null;
-    this.store.dispatch(new ClearErrorAction());
+    this.store.dispatch(AuthActions.clearError());
   }
 
   ngOnDestroy(): void {

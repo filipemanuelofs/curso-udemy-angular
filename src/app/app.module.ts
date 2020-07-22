@@ -14,7 +14,8 @@ import { CoreModule } from './core.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 import { AuthEffects } from './auth/store/auth.effects';
-import * as fromApp from './store/app.reducer';
+import * as fromAuth from './auth/store/auth.reducer';
+import * as fromRecipes from './recipes/store/recipe.reducer';
 import { environment } from 'src/environments/environment';
 import { RecipeEffects } from './recipes/store/recipe.effects';
 
@@ -30,7 +31,10 @@ import { RecipeEffects } from './recipes/store/recipe.effects';
     // AuthModule, importado via lazy loading em app-routing.module.ts
     SharedModule,
     CoreModule,
-    StoreModule.forRoot(fromApp.reducer),
+    StoreModule.forRoot({
+      auth: fromAuth.authReducer,
+      recipes: fromRecipes.recipeReducer,
+    }),
     EffectsModule.forRoot([AuthEffects, RecipeEffects]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),

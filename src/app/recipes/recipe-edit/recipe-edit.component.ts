@@ -5,11 +5,8 @@ import { map, switchMap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import { RecipeService } from '../recipe.service';
-import { Recipe } from '../recipe.model';
-
 import * as fromApp from '../../store/app.reducer';
-import { AddRecipesAction, UpdateRecipesAction } from '../store/recipe.actions';
+import * as RecipesActions from '../store/recipe.actions';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -25,8 +22,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private recipeService: RecipeService,
-    private store: Store<fromApp.State>
+    private store: Store<fromApp.AppState>
   ) {}
 
   ngOnInit(): void {
@@ -46,7 +42,7 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
     if (this.editMode) {
       // const recipe: Recipe = this.recipeService.getRecipe(this.id);
       this.storeSub = this.store
-        .select('recipe')
+        .select('recipes')
         .pipe(
           map((recipeState) => {
             return recipeState.recipes.find((recipe, index) => {
@@ -88,16 +84,16 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.editMode) {
-      // this.recipeService.updateRecipe(this.id, this.recipeForm.value);
       this.store.dispatch(
-        new UpdateRecipesAction({
+        RecipesActions.updateRecipe({
           index: this.id,
-          newRecipe: this.recipeForm.value,
+          recipe: this.recipeForm.value,
         })
       );
     } else {
-      // this.recipeService.addRecipe(this.recipeForm.value);
-      this.store.dispatch(new AddRecipesAction(this.recipeForm.value));
+      this.store.dispatch(
+        RecipesActions.addRecipe({ recipe: this.recipeForm.value })
+      );
     }
     this.onCancel();
   }

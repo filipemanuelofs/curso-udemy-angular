@@ -1,3 +1,4 @@
+import { Action, createReducer, on } from '@ngrx/store';
 import { User } from '../user.model';
 import * as AuthActions from './auth.actions';
 
@@ -13,45 +14,45 @@ const initialState: State = {
   loading: false,
 };
 
-export function reducer(state = initialState, action: AuthActions.AuthActions) {
-  switch (action.type) {
-    case AuthActions.ActionTypes.AuthenticateSuccess:
-      const authUser = new User(
-        action.payload.email,
-        action.payload.localId,
-        action.payload.token,
-        action.payload.tokenExpirationDate
-      );
-      return {
-        ...state,
-        user: authUser,
-        loading: false,
-      };
-    case AuthActions.ActionTypes.LoginStart:
-    case AuthActions.ActionTypes.SignupStart:
-      return {
-        ...state,
-        authError: null,
-        loading: true,
-      };
-    case AuthActions.ActionTypes.AuthenticateFail:
-      return {
-        ...state,
-        user: null,
-        authError: action.payload,
-        loading: false,
-      };
-    case AuthActions.ActionTypes.Logout:
-      return {
-        ...state,
-        user: null,
-      };
-    case AuthActions.ActionTypes.ClearError:
-      return {
-        ...state,
-        authError: null,
-      };
-    default:
-      return { ...state };
-  }
+const _authReducer = createReducer(
+  initialState,
+
+  on(AuthActions.loginStart, AuthActions.signupStart, (state) => ({
+    ...state,
+    authError: null,
+    loading: true,
+  })),
+
+  on(AuthActions.authenticateSuccess, (state, action) => ({
+    ...state,
+    authError: null,
+    loading: false,
+    user: new User(
+      action.email,
+      action.userId,
+      action.token,
+      action.expirationDate
+    ),
+  })),
+
+  on(AuthActions.authenticateFail, (state, action) => ({
+    ...state,
+    user: null,
+    authError: action.errorMessage,
+    loading: false,
+  })),
+
+  on(AuthActions.logout, (state) => ({
+    ...state,
+    user: null,
+  })),
+
+  on(AuthActions.clearError, (state) => ({
+    ...state,
+    authError: null,
+  }))
+);
+
+export function authReducer(state: State, action: Action) {
+  return _authReducer(state, action);
 }

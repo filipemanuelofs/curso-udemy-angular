@@ -1,52 +1,56 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Actions, ofType, Effect } from '@ngrx/effects';
-import { switchMap, map, withLatestFrom } from 'rxjs/operators';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { HttpClient } from '@angular/common/http';
+import { switchMap, map, withLatestFrom } from 'rxjs/operators';
 
-import { environment } from 'src/environments/environment';
+import * as RecipesActions from './recipe.actions';
 import { Recipe } from '../recipe.model';
-import * as RecipeActions from './recipe.actions';
 import * as fromApp from '../../store/app.reducer';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class RecipeEffects {
-  @Effect()
-  fetchRecipes = this.actions$.pipe(
-    ofType(RecipeActions.ActionTypes.FetchRecipes),
-    switchMap(() => {
-      return this.http.get<Recipe[]>(
-        `${environment.firebaseDatabaseURL}/recipes.json`
-      );
-    }),
-    map((recipes: Recipe[]) => {
-      return recipes.map((recipe) => {
-        return {
-          ...recipe,
-          ingredients: recipe.ingredients ? recipe.ingredients : [],
-        };
-      });
-    }),
-    map((recipes: Recipe[]) => {
-      return new RecipeActions.SetRecipesAction(recipes);
-    })
+  fetchRecipes$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(RecipesActions.fetchRecipes),
+      switchMap(() => {
+        return this.http.get<Recipe[]>(
+          `${environment.firebaseDatabaseURL}/recipes.json`
+        );
+      }),
+      map((recipes) => {
+        return recipes.map((recipe) => {
+          return {
+            ...recipe,
+            ingredients: recipe.ingredients ? recipe.ingredients : [],
+          };
+        });
+      }),
+      map((recipes) => {
+        return RecipesActions.setRecipes({ recipes });
+      })
+    )
   );
 
-  @Effect({ dispatch: false })
-  storeRecipes = this.actions$.pipe(
-    ofType(RecipeActions.ActionTypes.StoreRecipes),
-    withLatestFrom(this.store.select('recipe')),
-    switchMap(([recipeAction, recipeState]) => {
-      return this.http.put(
-        `${environment.firebaseDatabaseURL}/recipes.json`,
-        recipeState.recipes
-      );
-    })
+  storeRecipes$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(RecipesActions.storeRecipes),
+        withLatestFrom(this.store.select('recipes')),
+        switchMap(([actionData, recipesState]) => {
+          return this.http.put(
+            `${environment.firebaseDatabaseURL}/recipes.json`,
+            recipesState.recipes
+          );
+        })
+      ),
+    { dispatch: false }
   );
 
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private store: Store<fromApp.State>
+    private store: Store<fromApp.AppState>
   ) {}
 }

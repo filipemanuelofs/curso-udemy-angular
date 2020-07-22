@@ -17,7 +17,7 @@ import * as fromApp from '../store/app.reducer';
 export class AuthInterceptorService implements HttpInterceptor {
   constructor(
     private authService: AuthService,
-    private store: Store<fromApp.State>
+    private store: Store<fromApp.AppState>
   ) {}
 
   intercept(

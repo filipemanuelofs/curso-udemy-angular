@@ -1,56 +1,36 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
+import { Ingredient } from '../../shared/ingredient.model';
 
-import { Ingredient } from 'src/app/shared/ingredient.model';
+export const addIngredient = createAction(
+  '[Shopping List] Add Ingredient',
+  props<{
+    ingredient: Ingredient;
+  }>()
+);
 
-export enum ActionTypes {
-  AddIngredient = '[Shopping List] Add ingredient',
-  AddIngredients = '[Shopping List] Add ingredients',
-  UpdateIngredient = '[Shopping List] Update ingredient',
-  DeleteIngredient = '[Shopping List] Delete ingredient',
-  StartEdit = '[Shopping List] Start edit',
-  StopEdit = '[Shopping List] Stop edit',
-}
+export const addIngredients = createAction(
+  '[Shopping List] Add Ingredients',
+  props<{
+    ingredients: Ingredient[];
+  }>()
+);
 
-export class AddIngredientAction implements Action {
-  readonly type = ActionTypes.AddIngredient;
+export const updateIngredient = createAction(
+  '[Shopping List] Update Ingredient',
+  props<{
+    ingredient: Ingredient;
+  }>()
+);
 
-  constructor(public ingredient: Ingredient) {}
-}
+export const deleteIngredient = createAction(
+  '[Shopping List] Delete Ingredient'
+);
 
-export class AddIngredientsAction implements Action {
-  readonly type = ActionTypes.AddIngredients;
+export const startEdit = createAction(
+  '[Shopping List] Start Edit',
+  props<{
+    index: number;
+  }>()
+);
 
-  constructor(public ingredients: Ingredient[]) {}
-}
-
-export class UpdateIngredientAction implements Action {
-  readonly type = ActionTypes.UpdateIngredient;
-
-  constructor(public ingredient: Ingredient) {}
-}
-
-export class DeleteIngredientAction implements Action {
-  readonly type = ActionTypes.DeleteIngredient;
-
-  constructor() {}
-}
-
-export class StartEditAction implements Action {
-  readonly type = ActionTypes.StartEdit;
-
-  constructor(public index: number) {}
-}
-
-export class StopEditAction implements Action {
-  readonly type = ActionTypes.StopEdit;
-
-  constructor() {}
-}
-
-export type ShoppingListActions =
-  | AddIngredientAction
-  | AddIngredientsAction
-  | UpdateIngredientAction
-  | DeleteIngredientAction
-  | StartEditAction
-  | StopEditAction;
+export const stopEdit = createAction('[Shopping List] Stop Edit');

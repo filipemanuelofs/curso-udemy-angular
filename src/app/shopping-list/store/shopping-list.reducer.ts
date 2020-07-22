@@ -1,70 +1,57 @@
+import { Action, createReducer, on } from '@ngrx/store';
 import { Ingredient } from '../../shared/ingredient.model';
 import * as ShoppingListActions from './shopping-list.actions';
 
 export interface State {
   ingredients: Ingredient[];
-  editedIngredient: Ingredient;
-  editedIngredientIndex: number;
+  editIndex: number;
 }
 
 const initialState: State = {
   ingredients: [new Ingredient('Apples', 5), new Ingredient('Tomatoes', 10)],
-  editedIngredient: null,
-  editedIngredientIndex: -1,
+  editIndex: -1,
 };
 
-export function reducer(
-  state: State = initialState,
-  action: ShoppingListActions.ShoppingListActions
-) {
-  switch (action.type) {
-    case ShoppingListActions.ActionTypes.AddIngredient:
-      return {
-        ...state,
-        ingredients: [...state.ingredients, action.ingredient],
-      };
-    case ShoppingListActions.ActionTypes.AddIngredients:
-      return {
-        ...state,
-        ingredients: [...state.ingredients, ...action.ingredients],
-      };
-    case ShoppingListActions.ActionTypes.UpdateIngredient:
-      const ingredient = state.ingredients[state.editedIngredientIndex];
-      const updatedIngredient = {
-        ...ingredient,
-        ...action.ingredient,
-      };
-      const updatedIngredients = [...state.ingredients];
-      updatedIngredients[state.editedIngredientIndex] = updatedIngredient;
+const _shoppingListReducer = createReducer(
+  initialState,
 
-      return {
-        ...state,
-        ingredients: updatedIngredients,
-        editedIngredient: null,
-        editedIngredientIndex: -1,
-      };
-    case ShoppingListActions.ActionTypes.DeleteIngredient:
-      return {
-        ...state,
-        ingredients: state.ingredients.filter((ing, ingIndex) => {
-          return ingIndex !== state.editedIngredientIndex;
-        }),
-        editedIngredient: null,
-        editedIngredientIndex: -1,
-      };
-    case ShoppingListActions.ActionTypes.StartEdit:
-      return {
-        ...state,
-        editedIngredient: { ...state.ingredients[action.index] },
-        editedIngredientIndex: action.index,
-      };
-    case ShoppingListActions.ActionTypes.StopEdit:
-      return {
-        ...state,
-        editedIngredient: null,
-        editedIngredientIndex: -1,
-      };
-    default:
-      return { ...state };
-  }
+  on(ShoppingListActions.addIngredient, (state, action) => ({
+    ...state,
+    ingredients: state.ingredients.concat(action.ingredient),
+  })),
+
+  on(ShoppingListActions.addIngredients, (state, action) => ({
+    ...state,
+    ingredients: state.ingredients.concat(...action.ingredients),
+  })),
+
+  on(ShoppingListActions.updateIngredient, (state, action) => ({
+    ...state,
+    editIndex: -1,
+    ingredients: state.ingredients.map((ingredient, index) =>
+      index === state.editIndex ? { ...action.ingredient } : ingredient
+    ),
+  })),
+
+  on(ShoppingListActions.deleteIngredient, (state) => ({
+    ...state,
+    editIndex: -1,
+    ingredients: state.ingredients.filter(
+      (_, index) => index !== state.editIndex
+    ),
+  })),
+
+  on(ShoppingListActions.startEdit, (state, action) => ({
+    ...state,
+    editIndex: action.index,
+  })),
+
+  on(ShoppingListActions.stopEdit, (state) => ({
+    ...state,
+    editIndex: -1,
+  }))
+);
+
+export function shoppingListReducer(state: State, action: Action) {
+  return _shoppingListReducer(state, action);
 }

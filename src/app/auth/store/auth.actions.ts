@@ -1,70 +1,41 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
-export enum ActionTypes {
-  LoginStart = '[Auth] Login start',
-  AuthenticateFail = '[Auth] Login failed',
-  AuthenticateSuccess = '[Auth] Login',
-  SignupStart = '[Auth] Signup start',
-  Logout = '[Auth] Logout',
-  AutoLogin = '[Auth] Auto login',
-  ClearError = '[Auth] Clear error',
-}
+export const loginStart = createAction(
+  '[Auth] Login Start',
+  props<{
+    email: string;
+    password: string;
+  }>()
+);
 
-export class LoginStartAction implements Action {
-  readonly type = ActionTypes.LoginStart;
+export const signupStart = createAction(
+  '[Auth] Signup Start',
+  props<{
+    email: string;
+    password: string;
+  }>()
+);
 
-  constructor(public payload: { email: string; password: string }) {}
-}
+export const authenticateSuccess = createAction(
+  '[Auth] Authenticate Success',
+  props<{
+    email: string;
+    userId: string;
+    token: string;
+    expirationDate: Date;
+    redirect: boolean;
+  }>()
+);
 
-export class AuthenticateFailAction implements Action {
-  readonly type = ActionTypes.AuthenticateFail;
+export const authenticateFail = createAction(
+  '[Auth] Authenticate Fail',
+  props<{
+    errorMessage: string;
+  }>()
+);
 
-  constructor(public payload: string) {}
-}
+export const clearError = createAction('[Auth] Clear Error');
 
-export class SignupStartAction implements Action {
-  readonly type = ActionTypes.SignupStart;
+export const autoLogin = createAction('[Auth] Auto Login');
 
-  constructor(public payload: { email: string; password: string }) {}
-}
-
-export class AuthenticateSuccessAction implements Action {
-  readonly type = ActionTypes.AuthenticateSuccess;
-
-  constructor(
-    public payload: {
-      email: string;
-      localId: string;
-      token: string;
-      tokenExpirationDate: Date;
-      redirect: boolean;
-    }
-  ) {}
-}
-
-export class LogoutAction implements Action {
-  readonly type = ActionTypes.Logout;
-
-  constructor() {}
-}
-
-export class ClearErrorAction implements Action {
-  readonly type = ActionTypes.ClearError;
-
-  constructor() {}
-}
-
-export class AutoLoginAction implements Action {
-  readonly type = ActionTypes.AutoLogin;
-
-  constructor() {}
-}
-
-export type AuthActions =
-  | AuthenticateSuccessAction
-  | LogoutAction
-  | LoginStartAction
-  | AuthenticateFailAction
-  | SignupStartAction
-  | ClearErrorAction
-  | AutoLoginAction;
+export const logout = createAction('[Auth] Logout');
